@@ -1,0 +1,1417 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Орбитальная стабилизация</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/simple.min.css" id="theme">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+
+<!--   <link rel="stylesheet" href="reveal/dist/reset.css">
+  <link rel="stylesheet" href="reveal/dist/reveal.css">
+  <link rel="stylesheet" href="reveal/dist/theme/simple.css" id="theme">
+  <link rel="stylesheet" href="reveal/plugin/highlight/monokai.css">
+  <link rel="stylesheet" href="reveal/plugin/math/katex.js">
+ -->
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="robotanim.css">
+</head>
+
+<body>
+  <div class="slide-title">
+    <div style="display: flex; gap: 0.75rem; align-items: center">
+      <iframe
+        src="sirius-logo.html"
+        width="50pt"
+        height="50pt"
+        frameborder="0"
+        scrolling="no">
+      </iframe>
+      <div class="subtitle" id="slide-subtitle">##</div>
+    </div>
+  </div>
+
+  <div class="slide-info">
+     <div style="display: flex; gap: 0.75rem; align-items: center">
+      <div class="robot">
+        <div class="antenna left"></div>
+        <div class="antenna right"></div>
+        <div class="leg left"></div>
+        <div class="leg right"></div>
+        <div class="arm left"></div>
+        <div class="head"></div>
+        <div class="nose"></div>
+        <div class="eye"></div>
+        <div class="body"></div>
+        <div class="arm right"></div>
+      </div>
+      <div>
+        <div class="title-foot">Орбитальная стабилизация траекторий</div>
+        <div class="author-foot">
+          Максим Суров
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <div id="goto-slide" class="goto-slide">
+        <label>Go to slide: <input type="number" id="goto-input" min="1"></label>
+        <button id="goto-ok">Go</button>
+      </div>
+
+      <section data-title="">
+        <div class="cols">
+
+          <div>
+
+            <h1>
+              Задача орбитальной стабилизации траекторий нелинейных динамических систем
+            </h1>
+
+            <div class="author" style="margin-top: 30pt; margin-bottom: 30pt;">
+              Максим Олегович Суров<br>
+              <a style="font-size: 24pt; color: #202020; font-weight: bold;">&#9993 surov.mo@talantiuspeh.ru</a>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; align-items: margin-left">
+
+              <div style="height: 160pt">
+                <iframe
+                  src="sirius-logo.html?scale=3.0&period=8"
+                  width="160pt"
+                  height="100%"
+                  frameborder="0"
+                  scrolling="no">
+                </iframe>
+              </div>
+
+              <div>
+                <div class="organization-title">
+                  Сириус
+                </div>
+                <div class="organization-subtitle">
+                  Научно-технологический университет <br>
+                  Сочи, Россия
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div style="margin-top: 20pt">
+            <div class="video-frame">
+              <video src="media/quadrotor.mp4" controls autoplay muted loop playsinline></video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h1>
+          Траекторное управление роботами
+        </h1>
+      </section>
+
+      <section data-title="Задача траекторного управления">
+        <div class="cols" style="align-items: center;">
+          <div style="flex: 1">
+            <div class="regular">
+              <div class="title">
+                Задача
+              </div>
+              <ul>
+                <li>известные физические параметры робота, точнее — динамика робота — зависимость положений, скоростей от управляющих сигналов и времени</li>
+                <li>задана желаемая траектория движения робота</li>
+              </ul>
+              <p>Каким образом заставить робота двигаться по желаемой траектории?</p>
+            </div>
+
+            <div class="box issue">
+              <div class="title">Сложности</div>
+              <ul>
+                <li>начальное положения робота может не совпадать с начальной точкой траектории</li>
+                <li>на робот действуют внешние возмущения</li>
+                <li>сенсоры могут выдавать не совсем верные измерения</li>
+                <li>модель робота не точная, т.е. фактическое поведение может отличаться от предсказаний модели</li>
+              </ul>
+            </div>
+
+            <div class="regular">
+              Необходимо разработать алгоритм вычисления управляющих сигналов (закон обратной связи), чтобы робот двигался вдоль желаемой траектории.
+            </div>
+          </div>
+
+          <div style="flex: 1.2;">
+            <div class="box example">
+              <div class="title">Пример</div>
+              Колёсный робот с двумя прицепами.
+              Движение задним ходом по заранее заданной траектории — тягач толкает прицепы. Начальное состояние отстоит от заданной траектории. Геометрия системы точно не известна.
+            </div>
+            <div class="video-frame">
+              <video src="media/anim-8shaped-rev.mp4" controls autoplay muted loop playsinline>
+              </video>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section data-title="Траекторное управление квадрокоптером" data-background-gradient="radial-gradient(0, #333)">
+        <div class="video-frame">
+          <video src="media/quadrotor.mp4" controls autoplay muted loop playsinline>
+          </video>
+        </div>
+      </section>
+
+      <section>
+        <h1>
+          Формальная постановка задачи <br> орбитальной стабилизации
+        </h1>
+      </section>
+
+      <section data-title="Модель робота">
+        <div class="cols" style="align-items: center;">
+          <div style="flex: 1">
+            <div class="regular">
+              <div class="title" >
+                Динамика робота
+              </div>
+              Объект управления — аффинная по управлению динамическая система
+              $$
+                \frac{dx}{dt} = f(x) + g(x) u, \quad x\in\mathbb{R}^n, \quad u\in\mathbb{R}^m,
+              $$
+
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <td> $x$ </td>
+                    <td> состояние динамической системы </td>
+                  </tr>
+                  <tr>
+                    <td> $u$ </td>
+                    <td> управляющие воздействия </td>
+                  </tr>
+                  <tr>
+                    <td> $f : \mathbb{R}^n \to \mathbb{R}^n$ </td>
+                    <td> </td>
+                  </tr>
+                  <tr>
+                    <td> $g : \mathbb{R}^n \to \mathbb{R}^{n\times m}$ </td>
+                    <td> известные гладкие функции </td>
+                  </tr>
+                </tbody>
+              </table>
+
+            </div>
+
+            <div class="regular">
+              <div class="title" >
+                Траектория динамической системы
+              </div>
+              Две гладкие функции $x_\star(t)$ и $u_\star(t)$:
+              $$
+                \begin{aligned}
+                  x_\star(t) \in C^2(I, \mathbb{R}^n), \quad 
+                  u_\star(t) \in C^1(I, \mathbb{R}^m),
+                \end{aligned}
+              $$
+              определённые на интервале $I$, являются решением динамической системы (реализуемой траекторией робота), если удовлетворяют
+              $$
+                \frac{dx_\star(t)}{dt} = f(x_\star(t)) + g(x_\star(t)) u_\star(t) \quad \forall t \in I.
+              $$
+            </div>
+          </div>
+
+          <div style="flex: 1">
+            <div class="box note">
+              <div class="title">
+                Замечание
+              </div>
+              Будем считать, что фазовое пространство динамической системы имеет тривиальную топологию. Хотя данное предположение не выполняется для рассматриваемых роботов, нас интересует поведение робота в окрестности заданной траектории, где можно ввести локальные координаты в $\mathbb{R}^n$.
+            </div>
+
+            <div class="box example">
+              <div class="title">Пример</div>
+              Для колёсного робота $x$ состоит из 5 чисел
+              <ul>
+                <li>2 декартовы координаты тягача,</li>
+                <li>угол, задающий ориентацию тягача,</li>
+                <li>2 угла, задающие ориентации двух прицепов.</li>
+              </ul>
+              <br>
+              Управление $u$ имеет 2 компоненты
+              <ul>
+                <li>скорости уравнения левого и правого колёс.</li>
+              </ul>
+              <br>
+              Тогда
+              <br>
+              $f(x) \equiv 0_5$ — векторная функция на $\mathbb{R}^5$,
+              <br>
+              $g(x)$ — матричная функция $\mathbb{R}^{5\times2}$.
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section data-title="Задача траекторного управления">
+        <div class="cols" style="align-items: center;">
+          <div style="flex: 1">
+            <div class="regular">
+              <div class="title">
+                Задача:
+              </div>
+              <p>Известна динамика робота — функции $f(x)$ и $g(x)$.</p>
+              <p>Задана реализуемая траектория движения робота — функции $x_\star(t)$ и $u_\star(t)$.</p>
+              <p>Найти обратную связь — функцию $u(x, x_\star, u_\star)$ — такую, чтобы замкнутая система, т.е. дифференциальное уравнение</p>
+              <div class="math-annotated">
+                <span>
+                  $$
+                    \frac{dx}{dt} = f(x) + g(x) 
+                  $$
+                </span>
+                <span class="term">
+                  <span class="math"> $$ u(x, x_\star, u_\star) $$ </span>
+                  <span class="label" style="bottom: -1.6em;"> нужно задать эту функцию </span>
+                </span>
+                <span>
+                  $$
+                    =: \phi(x) 
+                  $$
+                </span>
+              </div>
+              <p>обладало следующими свойствами:</p>
+              <ol>
+                <li> $x_\star(t)$ являлось его решением, </li>
+                <li> $x_\star(t)$ являлось <em><b>орбитально устойчивым</b></em> решением. </li>
+              </ol>
+            </div>
+          </div>
+
+          <div style="flex: 1.2">
+            <div class="box example">
+              <div class="title">
+                Пример колёсного робота
+              </div>
+              Заданы 5 функций, определяющих состояние в каждый момент времени: $p_{x\star}(t), p_{y\star}(t), \theta_\star(t), \phi_{1\star}(t), \phi_{2\star}(t)$
+              и 2 функции, определяющие скорости вращения колёс (управляющие сигналы): $\alpha_\star(t), \beta_\star(t)$.
+              <br>
+              <!-- Требуется найти обратную связь, обеспечивающую движение <em>вдоль заданной траектории</em>. -->
+            </div>
+            <div class="video-frame">
+              <video src="media/anim-8shaped-rev.mp4" controls autoplay muted loop playsinline>
+              </video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h1>
+          Орбитальная устойчивость
+        </h1>
+      </section>
+
+      <section data-title="Классическая устойчивость траектории">
+        <div class="cols">
+          <div style="flex: 0.6; border-right: 2px solid rgba(150,150,150,0.95);" class="regular">
+            Рассмотрим динамику с обратной связью:
+            $$
+              \frac{dx}{dt} = f(x) + g(x) u(x, x_\star, u_\star) =: \phi(x)
+            $$
+            Пусть дифференциальное уравнение имеет частное решение $x_\star(t)$.
+            <p>
+              Как определяется устойчивость решения $x_\star(t)$?
+            </p>
+            <figure class="figure">
+              <img class="img" src="media/lyapunov-stability.svg"
+                   alt="Lyapunov Stability" style="max-width: 60%;">
+              <figcaption class="caption">
+                Частное решение не покидает шар $B_\epsilon$.
+              </figcaption>
+            </figure>
+          </div>
+          <div style="flex: 1">
+            <div class="regular">
+              <div class="title">
+                Устойчивость по Ляпунову
+              </div>
+              Введём новую переменную, описывающую отклонение от желаемой траектории:
+              $$
+                \Delta := x - x_\star(t).
+              $$
+              Её динамика описывается              
+              $$
+              \begin{equation}
+                \frac{d\Delta}{dt} = \phi(\Delta + x_\star(t)) - \frac{dx_\star(t)}{dt} =: \psi(t, \Delta)
+              \end{equation}
+              $$
+            </div>
+            <div class="box remark">
+              <b><em>Траектория</em></b> $x_\star(t)$ <b><em>устойчива по Ляпунову</em></b>, если тривиальное решение $\Delta \equiv 0$ уравнения (1) устойчиво по Ляпунову.
+              То есть, для любого сколь угодно малого $\epsilon > 0$ существует $\delta > 0$, $\delta = \delta(\epsilon)$, что любое решение, начинающееся из шара $\mathbf{B}_\delta$:
+              $$
+                \Delta(t_0) \in \mathbf{B}_\delta := \left\{p \in \mathbb{R}^n \mid \Vert p \Vert < \delta \right\}
+              $$
+              не покинет шар $\mathbf{B}_\epsilon$:
+              $$
+                \Delta(t) \in \mathbf{B}_\epsilon \quad \forall t \geq t_0.
+              $$
+            </div>
+            <div class="box remark">
+              <div class="title">
+                Асимптотическая устойчивость
+              </div>
+              Требуем дополнительно, чтобы $\Delta \to 0$ при $t \to \infty$.
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section data-title="Орбитальная устойчивость">
+        <div class="cols">
+          <div class="regular" style="flex: 1">
+            <div class="title">
+              Дополнительно определяем понятия
+            </div>
+
+            <ul>
+              <li><b><em>Орбита</em></b> — множество точек фазового пространства, через которые проходит решение:
+              $$
+                \mathrm{orb}\,x_\star := \left\{ x \in \mathbb{R}^n \mid x = x_\star(t), t \in I \right\}
+              $$
+              </li>
+              <li>Расстояние между точками фазового пространства (стандартная структура евклидова пространства):
+              $$
+                \mathrm{dist}(x, y) := \left\Vert x - y \right\Vert_2 \equiv \sqrt{\sum_{i=1}^n (x_i - y_i)^2 }
+              $$
+              </li>
+              <li>Расстояние от точки до орбиты:
+              $$
+                \mathrm{dist}(x, \mathrm{orb}\,x_\star) := \inf_{t\in I} \mathrm{dist}(x, x_\star(t))
+              $$
+              — расстояние от точки $x$ до ближайшей точки орбиты $\mathrm{orb}\,x_\star$.
+              </li>
+            </ul>
+          </div>
+          <div class="regular" style="flex: 1.2">
+            <ul>
+              <li><b><em>Трубчатая окрестность орбиты</em></b> — множество точек фазового пространства, которые удалены от орбиты менее, чем на эпсилон
+              $$
+                U_\epsilon := \left\{ x \in \mathbb{R}^n \mid \mathrm{dist}(x, \mathrm{orb}\,x_\star) < \epsilon \right\}
+              $$
+              </li>
+            </ul>
+            <div class="cols">
+
+              <figure class="figure" style="flex: 1">
+                <img class="img" src="media/tubular-neighborhood.svg"
+                     alt="Trajectory tubula neighborhood">
+                <figcaption class="caption">
+                  Расстояние от точки до орбиты, окрестность орбиты.
+                </figcaption>
+              </figure>
+
+              <figure class="figure" style="flex: 1">
+                <img class="img" src="media/trajectory-neighborhood.svg"
+                     alt="Trajectory tubula neighborhood">
+                <figcaption class="caption">
+                  Траектория имеет ограниченную кривизну — ближайшая точка единственная.
+                </figcaption>
+              </figure>
+
+             </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-title="Орбитальная устойчивость">
+        <div class="cols">
+          <div style="flex: 1">
+
+            <div class="box remark">
+              <em><b>Решение</b></em> $x_\star(t)$ дифференциального уравнения $\dot{x} = \phi(x)$
+              является <em><b>орбитально устойчивым</b></em>
+              $$\Updownarrow$$
+              Для любого сколь угодно малого $\epsilon > 0$ всегда можно указать $\delta > 0$, $\delta = \delta(\epsilon)$, что любое решение задачи Коши
+              $$
+                \dot x = \phi(x), \quad x(t_0) \in U_\delta
+              $$
+              лежит внутри трубки $U_\epsilon$:
+              $$
+                x(t) \in U_\epsilon \quad \forall t \in I, \, t \geq t_0.
+              $$
+            </div>
+            <div class="box remark">
+              <em><b>Асимптотическая орбитальная устойчивость</b></em> вводится для случая $I = \mathbb{R}$ или $I = S^1$. Дополнительное требуем, чтобы
+              $$
+                \mathrm{dist}(x, \mathrm{orb}\,x_\star) \to 0 \quad \text{при} \quad t \to \infty.
+              $$
+            </div>
+          </div>
+          <div style="flex: 0.6">
+            <figure class="figure" style="flex: 1; margin-top: 50pt;">
+              <img class="img" src="media/orbital-stability.svg"
+                   alt="Orbital stability">
+              <figcaption class="caption">
+                Произвольное частное решение $x_s(t)$ начинается в $U_\delta$ и не покидает $U_\epsilon$.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+      </section>
+
+
+      <section data-title="Пример: колебания математического маятника">
+        <div class="cols">
+          <div style="flex: 1">
+            <div class="box example">
+              Математическая модель маятника
+              $$
+                \ddot \theta = -\sin\theta,
+              $$
+              В нормальной форме:
+              $$
+                \dot{x}=\left[\begin{array}{c}
+                  x_{2}\\
+                  -\sin x_{1}
+                  \end{array}\right]=:\phi\left(x\right), 
+              $$
+              где $x := [\theta, \dot\theta]^\top$ — состояние системы. <br>
+              Номинальная траектория:
+              $$
+                x_{\star}\left(t\right)\equiv\left[\begin{array}{c}
+                \theta_{\star}\left(t\right)\\
+                \dot{\theta}_{\star}\left(t\right)
+                \end{array}\right],
+                \,\,
+                x_{\star}\left(0\right) = \left[\begin{array}{c}
+                1\\
+                0
+                \end{array}\right]
+              $$
+              <p>
+                Является ли траектория $x_\star(t)$ устойчивой?
+              </p>
+            </div>
+          </div>
+          <div style="flex: 1.2;">
+            <div class="regular">
+              Выберем <em>близкую</em> траекторию $x_s(t)$:
+              $$
+                x_s\left(0\right) = \left[\begin{array}{c}
+                1.1\\
+                0
+                \end{array}\right]
+              $$
+              Поскольку период зависит от полной энергии, разность $\Vert x_1(t) - x_\star(t) \Vert $ растёт из-за накапливающейся рассинхронизации маятников. При движении в противофазе
+              $$
+                  \exists t : \Vert x_\star(t) - x_s(t) \Vert > \Vert x_\star(0) \Vert,
+              $$
+              т.е. разница между решениями не может быть сколь угодно малой.
+              <p>Траектория $x_\star(t)$ <em><b>не устойчива по Ляпунову</b></em>.</p>
+            </div>
+            <div class="regular">
+              Траектория $x_\star(t)$ <em><b>орбитально устойчива</b></em>, поскольку пробная траектория целиком лежит в окрестности орбиты.
+            </div>
+          </div>
+          <div style="flex: 1.2">
+            <div class="video-frame">
+              <video src="media/pend_anim.mp4" controls autoplay muted loop playsinline></video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-title="Пример: осциллятор Ван дер Поля">
+        <div class="cols">
+          <div style="flex: 1" class="regular">
+            Осциллятор Ван дер Поля
+            $$\begin{aligned}
+              \dot{x}_{1} &= x_{2} \\
+              \dot{x}_{2} &= 2 \left(1-x^{2}_{1}\right)x_{2}-x_{1}
+            \end{aligned}$$
+            имеет периодические решение $x_\star(t)$, начинающееся из точки
+            $$
+              x_{\star}\left(0\right)=\left[\begin{array}{c}
+              2.02\\
+              0
+              \end{array}\right]
+            $$
+            Это решение является <b><em>орбитально асимптотически устойчивым</em></b>. Все в окрестности орбиты $\mathrm{orb}\,x_\star$ асимптотически сходятся к ней.
+          </div>
+          <div style="flex: 1">
+            <figure class="figure">
+              <img class="img" src="media/vanderpol_oscillator.svg"
+                   alt="Ven dr Pol oscillator">
+              <figcaption class="caption">
+                Фазовый портрет, расстояние от пробной траектории $x_s(t)$ до номинальной орбиты $\mathrm{orb}\,x_\star$.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h1>
+          Трансверсальные координаты
+        </h1>
+      </section>
+
+      <section data-title="Отклонение от орбиты">
+        <div class="cols" style="gap: 50pt;">
+          <div style="max-width: 36%;" class="regular">
+            При рассмотрении обычной устойчивости, мы вводили отклонение от решения
+            $$
+              \Delta := x(t) - x_\star(t)
+            $$
+            Из анализа динамики $\frac{d}{dt}\Delta$ требовали, чтобы
+            $$
+              \Delta \to 0 \quad \text{при} \quad t \to \infty
+            $$
+            <figure class="figure" style="flex: 1">
+              <img class="img" src="media/vanderpol-dif.svg"
+                   alt="Ven dr Pol oscillator">
+            </figure>
+          </div>
+          <div style="max-width: 36%" class="regular">
+            Для орбитальной устойчивости необходимо определить новые координаты $\xi$, которые будут отражать расстояние до орбиты и обеспечат
+            $$
+              \xi \to 0 \quad \Rightarrow \quad 
+              \mathrm{dist}(x(t), \mathrm{orb}\, x_\star) \to 0
+            $$
+            <figure class="figure" style="flex: 1">
+              <img class="img" src="media/vanderpol-orb-dist.svg"
+                   alt="Ven dr Pol oscillator">
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h1>
+          Частный случай — динамическая система на плоскости
+        </h1>
+      </section>
+
+      <section data-title="Гоеметрические построения">
+        <div class="cols">
+          <div style="flex: 1; border-right: 2px solid rgba(150,150,150,0.95);" class="regular">
+            Пусть $\dim x = 2$ и $\dim u = 1$:
+            <ol>
+              <li>
+                Сопоставим решению $x_\star(t)$ кривую $x_\star(\tau)$ на Декартовой плоскости в параметрическом представлении с параметром $\tau \in I$.
+              </li>
+              <li>
+                Потребуем 
+                $$
+                  \dot x_\star(t) \ne 0 \quad \forall t
+                $$
+                Тогда, учитывая $x_\star \in C^2(I)$, $x_\star(\tau)$ является регулярной кривой.
+              </li>
+              <li>
+                Для кривой определим касательный вектор
+                $$
+                  v\left(\tau\right):=\frac{\frac{dx_{\star}\left(\tau\right)}{d\tau}}{\left\Vert \frac{dx_{\star}\left(\tau\right)}{d\tau}\right\Vert }
+                $$
+                и вектор нормали
+                $$
+                  e\left(\tau\right):=\left[\begin{array}{cc}
+                    0 & -1\\
+                    1 & 0
+                    \end{array}\right]v\left(\tau\right).
+                $$
+              </li>
+            </ol>
+          </div>
+          <div style="flex: 1; " class="regular">
+            <ol>
+              <li value="4">
+                Определим оператор проекции точки $x \in U_\epsilon$ на кривую $x_\star(\tau)$:
+                $$\begin{aligned}
+                  &\, \tau = \pi(x) := \arg \min_\nu \Vert x - x_\star(\nu) \Vert \\
+                  &\, \pi : U_\epsilon \to I
+                \end{aligned}$$
+                При 
+                $$
+                  \epsilon<\frac{1}{\max_{\nu}\left|\mathrm{curv}\,x_{\star}\left(\nu\right)\right|}
+                $$
+                этот ближайшая точка будет единственной.
+              </li>
+              <li>
+                На нормали вводим систему координат с началом в точке $x_\star(\pi(x))$:
+                $$
+                \begin{aligned}
+                  &\, \xi = \beta(x) := e^\top\!(\tau) \, (x - x_\star(\tau)) \\
+                  &\, \beta : U_\epsilon \to \mathbb{R}
+                \end{aligned}
+                $$
+              </li>
+            </ol>
+            <div class="box remark fragment fade-left">
+              Получили преобразование координат $x \mapsto (\tau, \xi)$:
+              $$
+                \tau = \pi(x), \quad \xi = \beta(x).
+              $$
+            </div>
+          </div>
+          <div style="flex: 1">
+            <figure class="figure">
+              <img class="img" src="media/projection-operator-2d.svg"
+                   alt="Projection Operator 2D">
+             <figcaption class="caption">
+               Построения: $n(\tau)$ — вектор нормали, $\pi(x)$ — оператор проекции на кривую, $\xi$ — координата точки $x$ в локальной системе координат нормали.
+             </figcaption>
+            </figure>
+
+            <div class="box remark fragment fade-left">
+              При $\xi = 0$ динамическая система находится на орбите: $x \in \mathrm{orb} \, x_\star$. <br>
+              В новых координата цель управления 
+              $$\xi \to 0 \quad \text{при} \quad t\to\infty.$$
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-title="Динамика в новых координатах">
+        <div class="cols">
+          <div style="flex: 1;" class="regular">
+            Преобразование $x \mapsto (\tau,\xi) $
+            $$\begin{aligned}
+              \tau &= \arg \min_\nu \Vert x - x_\star(\nu) \Vert \\
+              \xi &= e^\top\!(\tau) \, (x - x_\star(\tau))
+            \end{aligned}$$
+            является обратимым:
+            $$
+              x = \alpha(\tau,\xi) := x_{\star}\left(\tau\right)+e\left(\tau\right)\xi
+            $$
+            и дифференцируемым
+            $$
+              \dot{x}=J\left[\begin{array}{c}
+                \dot{\tau}\\
+                \dot{\xi}
+                \end{array}\right],
+            $$
+            где $J\in\mathbb{R}^{2\times2}$ — матрица Якоби
+            $$
+              J:=\frac{\partial\alpha\left(\tau,\xi\right)}{\partial\left(\tau,\xi\right)}=\left[\begin{array}{c|c}
+              \frac{dx_{\star}\left(\tau\right)}{d\tau}+\frac{de\left(\tau\right)}{d\tau}\xi & e\left(\tau\right)\end{array}\right].
+            $$
+            Как видно, при достаточно малом $\epsilon > \vert \xi \vert$, столбцы линейно независимы и матрица $J$ имеет полный ранг.
+          </div>
+          <div style="flex: 1; margin-top: -50pt; border-left: 2px solid rgba(150,150,150,0.95); " class="regular">
+            Динамика робота
+            $$
+              \dot{x} = f(x) + g(x) u, \quad x\in\mathbb{R}^2, \quad u\in\mathbb{R}
+            $$
+            в новых координатах:
+            $$
+              \dot{x}=J\left[\begin{array}{c}
+              \dot{\tau}\\
+              \dot{\xi}
+              \end{array}\right]=f\left(\alpha\left(\tau,\xi\right)\right)+g\left(\alpha\left(\tau,\xi\right)\right)u
+            $$
+            Представим управление в виде суммы <em><b>упреждения</b></em> $u_\star(\tau)$ и <em><b>стабилизирующей добавки</b></em> $w$:
+            $$
+              u := u_\star(\tau) + w.
+            $$
+            Получим:
+            <div class="math-highlight">
+              $$\begin{aligned}
+                \dot{\tau} &= f_{\tau}\left(\tau,\xi\right)+g_{\tau}\left(\tau,\xi\right)w \\
+                \dot{\xi} &= f_{\xi}\left(\tau,\xi\right)+g_{\xi}\left(\tau,\xi\right)w
+              \end{aligned}$$
+            </div>
+            где $f_*(\tau,\xi)$ и $g_*(\tau,\xi)$ — гладкие функции:
+            $$\begin{aligned}
+              \left[\begin{array}{c}
+              f_{\tau}\left(\tau,\xi\right)\\
+              f_{\xi}\left(\tau,\xi\right)
+              \end{array}\right] &:= J^{-1}f\left(\alpha\left(\tau,\xi\right)\right)+J^{-1}g\left(\alpha\left(\tau,\xi\right)\right)u_{\star}\left(\tau\right) \\
+              \left[\begin{array}{c}
+              g_{\tau}\left(\tau,\xi\right)\\
+              g_{\xi}\left(\tau,\xi\right)
+              \end{array}\right] &:= J^{-1}g\left(\alpha\left(\tau,\xi\right)\right).
+            \end{aligned}$$
+
+          </div>
+        </div>
+      </section>
+
+      <section data-title="Трансверсальная линеаризация">
+        <div class="cols">
+          <div class="regular">
+            Динамика в координатах $(\tau, \xi)$:
+            $$\begin{aligned}
+              \dot{\tau} &= f_{\tau}\left(\tau,\xi\right)+g_{\tau}\left(\tau,\xi\right)w \\
+              \dot{\xi} &= f_{\xi}\left(\tau,\xi\right)+g_{\xi}\left(\tau,\xi\right)w
+            \end{aligned}$$
+            Заметим, что $\xi$ и $w$ малы, тогда
+            $$
+              \dot{\tau} \geq \mathrm{const} > 0 \quad \text{при} \quad \xi \in U_\epsilon \quad \text{и} \quad \vert w \vert \leq w_{\max}.
+            $$
+            Можно выписать эволюцию координаты $\xi$ в зависимости от координаты $\tau$:
+            $$
+              \frac{d\xi}{d\tau} = \frac{f_{\xi}\left(\tau,\xi\right)+g_{\xi}\left(\tau,\xi\right)w}{f_{\tau}\left(\tau,\xi\right)+g_{\tau}\left(\tau,\xi\right)w}
+            $$
+            Выделяя линейную часть по $\xi$ и по $w$, получим линеаризованную трансверсальную динамику:
+            <div class="math-highlight">
+              $$
+                \frac{d\xi}{d\tau} = A\left(\tau\right)\xi + B\left(\tau\right)w + o\left(\xi,w\right).
+              $$
+            </div>
+            Требуется разработать закон управления $w(\tau, \xi)$, который обеспечит устойчивость тривиального решения $\xi\equiv0$.
+          </div>
+          <div>
+            <figure class="figure" style="flex: 1">
+              <img class="img" src="media/vanderpol-phase.svg"
+                   alt="Van der Pol phase portrait">
+              <figcaption class="caption">
+                Частное решение исходной динамической системы $x = x_s(t)$ в окрестности периодической орбиты $\mathrm{orb} \, x_\star$.
+              </figcaption>
+            </figure>
+          </div>
+          <div>
+            <figure class="figure" style="flex: 1">
+              <img class="img" src="media/vanderpol-transverse.svg"
+                   alt="Van der Pol transverse coordinates">
+              <figcaption class="caption">
+                Соответствующее частное решение трансверсальной динамики $\xi = \xi(\tau)$. Для периодической системы отображение координаты $\xi$ за период $$\xi(\tau + T) = P(\xi(\tau))$$ называется <em><b>отображением Пуанкаре</b></em>. Если оно сжимающее, то орбита $\mathrm{orb} \, x_\star$ асимптотически устойчива.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section data-title="Стабилизирующая обратная связь">
+        <div class="cols">
+          <div class="regular">
+            При $n=2$ трансверсальная динамика получается одномерной:
+            $$
+              \frac{d\xi}{d\tau} = A\left(\tau\right)\xi + B\left(\tau\right)w, \quad A(\tau), B(\tau) \in \mathbb{R}.
+            $$
+            Для такой системы легко построить стабилизирующий регулятор. При $B(\tau) \ne 0$ можно задать
+            $$
+              w(\tau, \xi) := \frac{-A(\tau) \xi - k\xi}{B(\tau)}.
+            $$
+            и для любого $k > 0$ линеаризованная динамика будет экспоненциально устойчива.
+            Если $B(\tau)$ обращается в ноль, то обратная связь
+            $$
+              w(\tau, \xi) := -k B(\tau) \xi
+            $$
+            при достаточно большом $k$ обеспечит экспоненциальную устойчивость.
+          </div>
+          <div class="regular">
+            <p>
+              Из экспоненциальной устойчивости линейной системы можно сделать вывод об экспоненциальной устойчивости нелинейной трансверсальной динамики.
+            </p>
+            <p>
+              Соответствующий закон управления для исходной системы
+              <div class="math-highlight">
+                $$
+                  u(x) = u_\star(\pi(x)) + w(\pi(x), \beta(x))
+                $$
+              </div>
+              обеспечит асимптотическую устойчивость орбиты $\mathrm{orb}\,x_\star$.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section data-title="">
+        <h1>
+          Многомерный случай
+        </h1>
+      </section>
+
+      <section data-title="Оператор проекции на траекторию">
+        <div class="cols">
+          <div class="regular" style="max-width: 50%">
+            <div class="title">
+              По аналогии с n = 2:
+            </div>
+            <ul>
+              <li>
+                В $n$-мерном фазовом пространстве вводим структуру евклидова пространства (скалярное произведение и расстояние). 
+              </li>
+              <li>
+                Траектории $x_\star(t)$ сопоставляем регулярную кривую $x_\star(\tau) \in \mathbb{R}^n$
+                $$
+                  \frac{d x_\star(\tau)}{d\tau} \ne 0 \quad \forall \tau \in I
+                $$
+                определяем касательный вектор $v(\tau) \in S^{n-1}$
+                $$
+                  v\left(\tau\right):=\frac{\frac{dx_{\star}\left(\tau\right)}{d\tau}}{\left\Vert \frac{dx_{\star}\left(\tau\right)}{d\tau}\right\Vert }
+                $$
+              </li>
+              <li>
+                Определяем оператор проекции на траекторию
+                $$
+                  \tau = \pi(x) := \arg \min_\nu \Vert x - x_\star(\nu) \Vert, \quad \pi : U_\epsilon \to I.
+                $$
+              </li>
+            </ul>
+
+          </div>
+          <div>
+ 
+            <figure class="figure" style="flex: 1; margin-top: 100pt; margin-left: 100pt; max-width: 70%;">
+              <img class="img" src="media/projection-operator-3d.svg"
+                   alt="Projection operator 3D">
+              <figcaption class="caption">
+                Кривая $x_\star(\tau)$ в многомерном пространстве; $x_\star(\pi(x))$ — ближайшая к $x$ точка кривой; $v(\tau)$ — единичный касательный вектор.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section data-title="Секущая гиперплоскость">
+        <div class="cols">
+          <div class="regular" style="max-width: 50%;">
+            <div class="title">
+              Что изменится:
+            </div>
+            <ul>
+              <li>
+                Чтобы локализовать точку $x$, нужно определить координаты 
+                $$\xi \equiv [\xi_1, \xi_2, \dots, \xi_{n-1}]^\top \in \mathbb{R}^{n-1}$$
+                — получится $n-1$ трансверсальных координат $\xi$. 
+              </li>
+              <li>
+                Преобразование координат
+                $$
+                  \xi = \beta(x), \quad \beta : U_\epsilon \to \mathbb{R}^{n-1}.
+                $$
+              </li>
+            </ul>
+
+            <div class="title">
+              Как ввести координаты $\xi$?
+            </div>
+            Зафиксируем $\tau$, определим множество решений уравнения
+            $$
+              S_\tau := \left\{x\in U_\epsilon \mid \pi(x) = \tau\right\}.
+            $$
+            Необходимое условие минимума
+            $$
+              \tau = \arg \min_\nu \Vert x - x_\star(\nu) \Vert \quad \Rightarrow \quad \left(x - x_\star(\tau)\right)^\top v(\tau) = 0
+            $$
+            определяет гиперплоскость: $v(\tau)$ — вектор нормали к гиперплоскости, $x_\star(\tau)$ — принадлежащая ей точка.
+          </div>
+          <div style="flex: 10">
+            <figure class="figure" style="margin-top: 100pt; margin-left: 100pt; max-width: 70%;">
+              <img class="img" src="media/hyperplane-3d.svg"
+                   alt="Hyperplane 3D">
+              <figcaption class="caption">
+                
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section data-title="Трансверальные координаты">
+        <div class="cols">
+          <div class="regular">
+            Гиперплоскость $S_\tau$ — линейное пространство размерности $n-1$. Определяем базисные вектора (подвижный репер): 
+            $$
+              E(\tau)\equiv\left[\begin{array}{c|c|c|c}
+                e_{1}(\tau) & e_{2}(\tau) & \dots & e_{n-1}(\tau)\end{array}\right]\in\mathbb{R}^{n\times n-1}.
+            $$
+            Вектор $x - x_\star(\tau)$ раскладываем по базисным векторам $e_i(\tau)$:
+            $$
+              x - x_\star(\tau) = e_1(\tau) \xi_1 + e_2(\tau) \xi_2 + \dots + e_{n-1} \xi_{n-1}.
+            $$
+            Коэффициенты раздложения $\xi_i$ — трансверсальные координаты. Тогда
+            $$
+              x = \alpha(\tau, \xi) := x_\star(\tau) + E(\tau) \xi
+            $$
+            Базис может быть произвольный. Выберем ортонормированный:
+            $$
+              e^{\top}_{i}\!(\tau) \, e_{j}(\tau) = \begin{cases}
+                1, & i=j\\
+                0, & i\ne j
+                \end{cases} 
+                \quad \Rightarrow \quad 
+                E^\top\!(\tau) \, E(\tau) = I.
+            $$
+            Тогда преобразование $x\to\xi$ запишется как
+            $$
+              \xi = \beta(x) = E^{\top}\!\left(\tau\right)\left(x-x_{\star}\left(\tau\right)\right).
+            $$
+          </div>
+          <div>
+            <figure class="figure" style="max-width: 70%; margin-left: 100pt;">
+              <img class="img" src="media/hyperplane-basis-vectors-3d.svg" alt="Hyperplane basis vectors 3d">
+            </figure>
+            <div class="box remark">
+              Получили преобразование координат $x \mapsto (\tau,\xi)$:
+              $$\begin{aligned}
+                \tau = \pi(x) &= \arg \min_\nu \Vert x - x_\star(\nu)\Vert, \quad \pi : U_\epsilon \to I \\
+                \xi = \beta(x) &= E^{\top}\!\left(\tau\right)\left(x-x_{\star}\left(\tau\right)\right), \quad \beta : U_\epsilon \to \mathbb{R}^{n-1}.
+              \end{aligned}
+              $$
+              Обратное преобразование:
+              $$
+                x = \alpha(\tau,\xi) = x_\star(\tau) + E(\tau) \xi, \quad \alpha : I\times\mathbb{R}^{n-1} \to \mathbb{R}^n.
+              $$
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-title="Алгоритм управления">
+        <div class="cols">
+          <div class="regular" style="margin-top: 50pt;">
+            Преобразование является диффеоморфизмом в $U_\epsilon$, тогда
+            $$
+              \dot{x}=J\left[\begin{array}{c}
+                \dot{\tau}\\
+                \dot{\xi}
+                \end{array}\right],\quad
+                J := \frac{\partial\alpha\left(\tau,\xi\right)}{\partial\left(\tau,\xi\right)}=\left[\begin{array}{c|c}
+              \frac{dx_{\star}\left(\tau\right)}{d\tau}+\frac{dE\left(\tau\right)}{d\tau}\xi & E\left(\tau\right)\end{array}\right],
+            $$
+            где $J\in \mathbb{R}^{n\times n}$ имеет полный ранг,
+            $\mathrm{rank}\, J = n,$ при $\Vert \xi\Vert < \epsilon$.
+            <br>
+            Представляем управление в виде
+            $$
+              u = u_\star(\tau) + w,
+            $$
+            тогда эволюция коордиант $\xi$ и $\tau$ запишется как
+            $$\begin{aligned}
+              \dot{\xi}&=f_{\xi}\left(\tau,\xi\right)+g_{\xi}\left(\tau,\xi\right)w\\
+              \dot{\tau}&=f_{\tau}\left(\tau,\xi\right)+g_{\tau}\left(\tau,\xi\right)w,
+            \end{aligned}$$
+            а трансверсальная динамика
+            <div class="math-highlight">
+              $$
+              \begin{aligned}
+                \frac{d\xi}{d\tau}=A\left(\tau\right)\xi+B\left(\tau\right)w+o\left(\xi,w\right),
+              \end{aligned}$$
+            </div>
+            где $A(\tau) \in \mathbb{R}^{(n-1) \times (n-1)}$, $B(\tau) \in \mathbb{R}^{(n-1) \times m}$ — матричные функции.
+          </div>
+          <div class="regular">
+            Управление $w(\tau,\xi)$ минимизирует функционал
+            $$
+              \Phi = \int_0^\infty \xi^\top Q \xi + w^\top R w d\tau,
+            $$
+            где $Q, R \succ 0$ — весовые матрицы (могут зависеть от $\tau$). <br>
+            Получается <b><em>линейно-квадратичный регулятор</em></b>
+            <div class="math-highlight">
+              $$
+                w(\tau,\xi) = K(\tau) \xi := -R^{-1 }B^\top\!(\tau) P(\tau) \, \xi,
+              $$
+            </div>
+            где $P(\tau) \succ 0$ — стабилизирующее решение матричного дифференциального уравнения Риккати
+            $$
+              \frac{dP(\tau)}{d\tau} + A^\top\!(\tau) P(\tau) + P(\tau) A^\top\!(\tau) - P(\tau) B(\tau) R^{-1} B^\top\!(\tau) P(\tau) + Q = 0.
+            $$
+            Тогда обратная связь для исходной системы выглядит как
+            <div class="math-highlight">
+              $$
+              \begin{equation}
+                u(x) = u_\star(\pi(x)) + K(\pi(x)) \beta(x).
+              \end{equation}
+              $$
+            </div>
+            <div class="title">
+              Алгоритм
+            </div>
+            <ol>
+              <li>
+                Для заданной динамики робота и заданной траектории выписываем линеаризованную трансверсальную динамику — матрицы $A(\tau)$ и $B(\tau)$,
+              </li>
+              <li>
+                Находим стабилизирующее решение уравнения Риккати $P(\tau)$, вычисляем коэффициенты $K(\tau)$ для линейной системы.
+              </li>
+              <li>
+                Подставляем $K(\tau)$ в закон управления (1).
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section data-title="">
+        <h1>
+          Вычисление подвижного репера
+        </h1>
+      </section>
+
+      <section data-title="Алгоритмы вычисления базиса">
+        <div class="cols">
+          <div style="margin-top: 100pt">
+            <div class="box remark">
+              Задана регулярная кривая $x_\star(\tau)$ в $n$-мерном декартовом пространстве, $v(\tau)$ — касательный вектор кривой. Как найти ортонормированный базис ортогонального дополнения вектора $\frac{d}{d\tau} x_\star(\tau)$, т.е. вектора $e_1(\tau), e_2(\tau), \dots, e_{n-1}(\tau)$?
+            </div>
+          </div>
+          <div>
+            <div class="regular fragment fade-left">
+              <div class="title">
+                Уравнения Френе
+              </div>
+              представляют собой алгоритм ортогонализации Грама-Шмидта
+              $$
+              \begin{aligned}
+                \bar{e}_{k} &=\frac{d^{k}v}{ds^{k}}-\sum^{k-1}_{i=1}\left(e^{\top}_{i}\frac{d^{k}v}{ds^{k}}\right)e_{i}-\left(v^{\top}\frac{d^{k}v}{ds^{k}}\right)v \\
+                e_k &= \frac{\bar e_k}{\Vert \bar e_k \Vert}, \quad \frac{d}{ds}=\left\Vert \frac{dx_{\star}\left(\tau\right)}{d\tau}\right\Vert ^{-1}\frac{d}{d\tau}
+              \end{aligned}
+              $$
+              где $s$ — естественный параметр кривой.<br>
+              Недостатки:
+              <ul>
+                <li>
+                  необходимость вычислять производные высоких порядков вплоть до $n.$ Требования к гладкости траектории: $x_\star \in C^n(I)$;
+                </li>
+                <li>
+                  производные должны быть линейно независимыми;
+                </li>
+                <li>
+                  сложности при программной реализации.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section data-title="Поворот касательного вектора">
+        <div class="cols">
+          <div style="margin-top: 100pt">
+            <div class="box remark">
+              Задана регулярная кривая $x_\star(\tau)$ в $n$-мерном декартовом пространстве, $v(\tau)$ — касательный вектор кривой. Как найти ортонормированный базис ортогонального дополнения вектора $\frac{d}{d\tau} x_\star(\tau)$, т.е. вектора $e_1(\tau), e_2(\tau), \dots, e_{n-1}(\tau)$?
+            </div>
+            <div class="regular">
+              <div class="title">
+                Умножение на константную матрицу
+              </div>
+              Для $n=2$ вектор 
+              $$
+                e(\tau) = \left[\begin{array}{cc}
+                    0 & -1\\
+                    1 & 0
+                    \end{array}\right] v(\tau).
+              $$
+              Можно ли задать ортогональное дополнение вектора $v(\tau)$ аналогичным способом для $n>2$?
+            </div>
+          </div>
+          <div>
+            <div class="fragment fade-left">
+              <div class="regular" style="border-left: 2px solid rgba(150, 150, 150, 0.50); margin-top: -50pt">
+                Можно для $n=4$:
+                $$
+                \begin{aligned}
+                  &\, e_i(\tau) := Q_i \, v(\tau), \quad \text{где} \quad
+                  Q_1 := \left[\begin{array}{cccc}
+                    0 & -1 & 0 & 0\\
+                    1 & 0 & 0 & 0\\
+                    0 & 0 & 0 & -1\\
+                    0 & 0 & 1 & 0
+                    \end{array}\right], \\
+                  &\quad Q_2 := \left[\begin{array}{cccc}
+                    0 & 0 & -1 & 0\\
+                    0 & 0 & 0 & 1\\
+                    1 & 0 & 0 & 0\\
+                    0 & -1 & 0 & 0
+                    \end{array}\right], \quad
+                  Q_3 := \left[\begin{array}{cccc}
+                    0 & 0 & 0 & -1\\
+                    0 & 0 & -1 & 0\\
+                    0 & 1 & 0 & 0\\
+                    1 & 0 & 0 & 0
+                    \end{array}\right].
+                \end{aligned}$$
+                И для $n=8$ — с соответствующими константными матрицами $Q_{1}, \dots, Q_{7}$.
+                <p>
+                  Константные <em><b>матрицы</b></em> $Q_i$, позволяющие вычислить базис ортогонального дополнения:
+                  $$
+                    e_i(\tau) = Q_i \, v(\tau), \quad i = 1 \dots (n-1),
+                  $$
+                  <em><b>существуют только в $\mathbb{R}^2, \mathbb{R}^4$ и $\mathbb{R}^8$. В пространствах других размерностей таких матриц не существует!</b></em>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="box issue fragment fade-left" style="max-width: 60%; margin-left: 20%;">
+          <div class="regular" style="text-align: center; font-size: 24pt; font-weight: 500; font-style: italic;">
+            Существует ли универсальный способ вычисления векторов $e_i(\tau)$?
+          <div>
+        </div>
+      </section>
+
+      <section data-title="Базис — решение линейного дифференциального уравнения">
+        <div class="cols">
+          <div class="regular">
+            Составим матрицу из ортогональных векторов:
+            $$
+              R\left(\tau\right):=\left[\begin{array}{c|c|c|c|c}
+                v\left(\tau\right) & e_{1}\left(\tau\right) & e_{2}\left(\tau\right) & \dots & e_{n-1}\left(\tau\right)\end{array}\right] \in O(n).
+            $$
+            Без потери общности потребуем $\det R(\tau) = 1$. Тогда $R(\tau) \in SO(n)$ — матрица поворота $n$-мерного пространства.
+            <p>
+              Матрица поворота должна удовлетворять дифференциальному уравнению
+              $$
+                \frac{d}{d\tau} R(\tau) = S(\tau) R(\tau),
+              $$
+              где $S(\tau) \in \mathrm{Skew}_n$ — некоторая кососимметрическая матрица. 
+            </p>
+            <p>
+              Требуется определить матрицу $S(\tau)$, для которой решения дифференциального уравнения имеют структуру
+              $$
+                \mathrm{col}_1 R(\tau) = v(\tau).
+              $$
+            </p>
+          </div>
+          <div class="box theorem">
+            <div class="title">
+              Теорема
+            </div>
+            Рассмотрим произвольное решение $R(\tau)$ задачи Коши
+            $$\begin{aligned}
+              & \frac{d}{d\tau} R(\tau) =
+               \frac{dv(\tau)}{d\tau} \wedge v(\tau) \, R(\tau) \quad \text{при} \\
+              &\quad R(\tau_0) \in SO(n), \quad \mathrm{col}_1 R(\tau_0) = v(\tau_0),
+            \end{aligned}$$
+            где оператор «$\wedge$» определён для векторов $a, b \in \mathbb{R}^n$ как: $a \wedge b \equiv a b^\top - b a^\top$. <br>
+            Тогда функция $R(\tau)$ удовлетворяет:
+            $$
+              R(\tau) \in SO(n) \quad \text{и} \quad
+              \mathrm{col}_1 R(\tau) = v(\tau) \quad \forall \tau.
+            $$
+            Столбцы матрицы $R(\tau)$ определяют ортонормированный базис ортогонального дополнения вектора $v(\tau)$:
+            $$
+              e_i(\tau) = \mathrm{col}_{i+1} \, R(\tau).
+            $$
+          </div>
+        </div>
+      </section>
+
+      <section data-title="Периодический базис">
+        <div class="cols">
+          <div>
+            <div class="regular">
+              Для произвольной периодической траектории $x_\star(t)$ с периодом $T$ необходимо построить периодический базис: 
+              $$
+                e_i(\tau) \in C^1 \quad \text{и} \quad e_i(\tau) = e_i(\tau + T) \quad \forall \tau.
+              $$
+              Для периодической $x_\star(t)$ касательный вектор $v(\tau)$ и матрица $S(\tau) \equiv \frac{dv(\tau)}{d\tau} \wedge v(\tau) $ тоже будут периодическими.
+              <p>
+                Но <em><b>решения уравнения</b></em>
+                $$\begin{aligned}
+                  & \frac{d}{d\tau} R(\tau) =
+                   S(\tau) \, R(\tau),
+                \end{aligned}$$
+                вообще говоря, <em><b>не являются периодическими</b></em>. Значит, при $\tau = T$ получим разрыв в преобразовании $\xi = E^\top\!(\tau) \, (x - x_\star(\tau)$.
+              </p>
+            </div>
+            <div class="box issue">
+              Как модифицировать матрицу $R(\tau) \mapsto \bar R(\tau)$, чтобы сохранить её структуру и сделать её $T$-периодической:
+              $$
+                \bar R(\tau) \in SO(n), \quad \mathrm{col}_1 \bar R(\tau) = v(\tau), \quad \bar R(\tau) = \bar R(\tau + T) \quad \forall \tau.
+              $$
+            </div>
+          </div>
+
+          <div>
+            <div class="box theorem">
+              <div class="title">
+                Теорема
+              </div>
+              Рассмотрим гладкую функцию $R(\tau) \in SO(n)$, первый столбец которой 
+              $$
+                \mathrm{col}_1 R(\tau) = v(\tau) = v(\tau + T) \quad \forall \tau
+              $$
+              является периодической функцией. Пусть все собственные числа матрицы
+              $$
+                D := R^\top\!(T) R(0)
+              $$
+              отличны от $-1$. Тогда матрица
+              $$
+                \bar R(\tau) := R(\tau) \exp{\left(\frac{\tau}{T} \log D \right)}
+              $$
+              обладает свойствами:
+              $$
+                \bar R(\tau) \in SO(n), \quad
+                \mathrm{col}_1 \bar R(\tau) = v(\tau), \quad
+                \bar R(\tau) = \bar R(\tau + T).
+              $$
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h1>
+          Примеры
+        </h1>
+      </section>
+
+      <section data-title="Робот Бабочка" data-background-gradient="radial-gradient(0, #333)">
+        <div class="video-frame">
+          <video src="media/butterfly-forth-and-back.mp4" controls autoplay muted loop playsinline>
+          </video>
+        </div>
+      </section>
+
+      <section data-title="Синхронизация 6 Бабочек" data-background-gradient="radial-gradient(0, #333)">
+        <div class="video-frame">
+          <video src="media/sync-butterfly-presentation.mp4" controls autoplay muted loop playsinline>
+          </video>
+        </div>
+      </section>
+
+      <section data-title="Актуальные задачи">
+        <div class="cols">
+          <div class="regular">
+            <div class="box issue fragment fade-left">
+              Исследовать различные операторы проекции $\tau = \pi(x)$. 
+            </div>
+            <div class="box issue fragment fade-left">
+              Как определить оператор проекции и трансверсальные координаты для системы с более сложной топологией фазового пространства? Квадрокоптер имеет 12-и мерное фазовое пространство $TSE(3)$.
+            </div>
+            <div class="box issue fragment fade-left">
+              Как модифицировать метод трансверсальной линеаризации, чтобы достичь не только орбитальной, но и асимптотической устойчивости? Решение этой задачи позволяет реализовать синхронизацию нескольких роботов — как централизованную, так и распределённую
+            </div>
+            <div class="box issue fragment fade-left">
+              Стабилизация линеаризованной трансверсальной динамики без LQR, в частности, с использованием регулятора на скользящих режимах.
+            </div>
+
+            <div class="regular" style="max-width: 47%; border-top: 2px solid rgba(150,150,150,0.95); font-size: 16pt; position: fixed; bottom: -200pt;">
+              <img src="media/researchgate.svg" alt="QR code researchgate" class="bottom-right-image">
+                ● M. Surov, <em>Orbital Stabilization of Periodic Motions Induced by Singular Virtual Holonomic Constraints</em>, RJND, 2026 <br>
+                ● M. Surov et al, <em>Constructing Transverse Coordinates for Orbital Stabilization of Periodic Trajectories</em>, ACC 2020 <br>
+                ● M. Surov, <em>Sliding-Mode-Based Control Design for the Butterfly Robot</em>, IEEE TCST 2026 <br>
+                ● M. Surov et al, <em>Orbital Stabilization and Time Synchronization of Unstable Periodic Motions in Underactuated Robots</em>, ICRA 2026
+            </div>
+          </div>
+          <div style="margin-top: 50pt">
+            <div class="video-frame">
+              <video src="media/car-trailers reverse drive stab.mp4" controls autoplay muted loop playsinline>
+              </video>
+              <div class="caption">
+                Движение задним ходом автопоезда: тягач толкает 4 прицепа: 2 управления, 7 фазовых координат. Фазовое пространство имеет топологию $\mathbb{R}^2 \times (S^1)^5$.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="page-number-badge" id="page-number">1 / 1</div>
+
+  <script src="reveal/plugin/math/math.js"></script>
+  <script src="reveal/dist/reveal.js"></script>
+  <script>
+
+    const deck = new Reveal({
+      width: 1920,
+      height: 1080,
+      controls: true,
+      progress: true,
+      center: true,
+      hash: true,
+      slideNumber: false, // we'll show a custom page number badge
+      transition: 'convex',
+      dependencies: [
+        // add plugins here if needed
+      ],
+	    plugins: [ RevealMath.KaTeX ],
+	    // plugins: [ RevealMath.MathJax3 ],
+      math: {
+        delimiters: [
+          {left: "$$", right: "$$", display: true},
+          {left: "\\[", right: "\\]", display: true},
+          {left: "$", right: "$", display: false},
+          {left: "\\(", right: "\\)", display: false}
+        ]
+      }
+    });
+    deck.initialize();
+
+    // Helper to update page number and subtitle
+    function updateStatus() {
+      const indices = deck.getIndices();
+      const total = (function countSections(){
+        // count top-level sections only (not vertical stacks), emulate visible slides count
+        const secs = Array.from(document.querySelectorAll('.reveal .slides > section'));
+        // include vertically nested sections: flatten
+        let count = 0;
+        secs.forEach(s=>{
+          const children = s.querySelectorAll('section');
+          if(children.length) count += children.length; else count +=1;
+        });
+        return count;
+      })();
+
+      // Compute linear index (1-based): horizontal index plus vertical offset
+      // Reveal offers getTotalSlides() but not in all builds; compute manually
+      const horizontal = indices.h || 0;
+      const vertical = indices.v || 0;
+
+      // Create a simple mapping: iterate all top-level sections and accumulate
+      const tops = Array.from(document.querySelectorAll('.reveal .slides > section'));
+      let linearIndex = 0;
+
+      for(let i=0;i<tops.length;i++){
+        const nested = tops[i].querySelectorAll('section');
+        if(nested.length){
+          if(i < horizontal) linearIndex += nested.length;
+          else if(i === horizontal) linearIndex += (vertical + 1);
+        } else {
+          if(i < horizontal) linearIndex += 1;
+          else if(i === horizontal) linearIndex += 1;
+        }
+      }
+
+      if (linearIndex === 0) linearIndex = 1; // fallback
+
+      // Update DOM
+      const badge = document.getElementById('page-number');
+      badge.textContent = linearIndex + ' / ' + total;
+
+      // Update slide subtitle from the slide's h2 or data-title
+      const current = deck.getCurrentSlide();
+      let label = '';
+      if(current) {
+        const h2 = current.querySelector('h2');
+        if(current.dataset && current.dataset.title) {
+          label = current.dataset.title;
+        } else if (h2) {
+          label = h2.textContent.trim();
+        }
+      }
+
+      if (label) {
+        document.getElementById('slide-subtitle').textContent = label;
+      } else {
+        document.getElementById('slide-subtitle').textContent = '';
+      }
+    }
+
+    deck.on('ready', updateStatus);
+    deck.on('slidechanged', updateStatus);
+    deck.on('fragmentshown', updateStatus);
+  </script>
+</body>
+</html>

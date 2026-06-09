@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="initial-scale=1.0" />
+    <title>Sirius Logo</title>
+        <style>
+            html, body {
+                margin: 0;
+                overflow: hidden;
+                background: transparent;
+            }
+
+            canvas {
+                display: block;
+                background: transparent;
+            }
+        </style>
+    </head>
+
+    <body>
+        <canvas id="canvas"></canvas>
+        <script>
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener("resize", resize);
+            resize();
+
+            const params = new URLSearchParams(window.location.search);
+            const SCALE = parseFloat(params.get("scale") || "1");
+            const PERIOD = parseFloat(params.get("period") || "5");
+            const X0 = 3;
+            const Y0 = 3;
+            const PI = 4 * Math.atan(1);
+            const BASE_COLOR = '#0e9da0';
+            const HI_COLOR = '#4eedef';
+            const stars = [
+                { x: 11.4, y: 3.4, w: 5.4 },
+                { x: 21.1, y: 2.1, w: 4.5 },
+                { x: 5.1, y: 10.3, w: 4.5 },
+                { x: 12.5, y: 10.9, w: 4.5 },
+                { x: 18.5, y: 7.9, w: 4.5 },
+                { x: 3.1, y: 19.6, w: 4.0 },
+                { x: 9.9, y: 16.4, w: 4.0 },
+                { x: 18.5, y: 14.3, w: 4.0 },
+                { x: 24.6, y: 8.1, w: 4.0 },
+                { x: 30.3, y: 4.1, w: 4.0 },
+                { x: 5.9, y: 28.9, w: 3.5 },
+                { x: 10.1, y: 22.9, w: 3.5 },
+                { x: 15.8, y: 19.9, w: 3.5 },
+                { x: 21.7, y: 19.9, w: 3.5 },
+                { x: 24.7, y: 14.6, w: 3.5 },
+                { x: 30.4, y: 11.4, w: 3.5 },
+                { x: 37.5, y: 10.8, w: 3.5 },
+                { x: 13.7, y: 28.6, w: 2.9 },
+                { x: 19.1, y: 25.5, w: 2.9 },
+                { x: 25.3, y: 25.6, w: 2.5 },
+                { x: 28.1, y: 20.2, w: 2.9 },
+                { x: 33.4, y: 16.9, w: 3.1 },
+                { x: 12.6, y: 35.8, w: 2.9 },
+                { x: 19.0, y: 31.9, w: 2.5 },
+                { x: 33.7, y: 23.4, w: 2.5 },
+                { x: 39.8, y: 20.1, w: 3.1 },
+                { x: 25.6, y: 32.2, w: 2.0 },
+                { x: 30.8, y: 29.1, w: 2.0 },
+                { x: 22.2, y: 38.4, w: 2.5 },
+                { x: 37.7, y: 29.4, w: 2.5 },
+                { x: 31.1, y: 36.1, w: 2.0 },
+            ];
+
+            function fract(v) {
+                return v - Math.floor(v);
+            }
+
+            function rand_from_value(x) {
+                return fract(Math.sin(x * 12.9898) * 43758.5453123);
+            }
+
+            function draw_star(x, y, radius, color, shadow_color) {
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.shadowBlur = 9;
+                ctx.fillStyle = color;
+                ctx.shadowColor = shadow_color;
+                ctx.fill();
+            }
+
+            function sq(a) {
+                return a * a;
+            }
+
+            function cb(a) {
+                return a * a * a;
+            }
+
+            function smooth_step(x, p) {
+                const s = 3 * sq(x) - 2 * cb(x);
+                const sp = Math.pow(s, p)
+                const np = Math.pow(1 - s, p)
+                return sp / (sp + np);
+            }
+
+            function clamp(x, min, max) {
+                return Math.min(Math.max(x, min), max);
+            }
+
+            function animate(time) {
+                const sec = time * 1e-3;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const nstars = stars.length;
+                const phase = (sec % PERIOD) / PERIOD;
+
+                for (const [i, star] of stars.entries()) {
+                    const v = clamp(2. * phase - i / nstars, 0, 1);
+                    d = Math.pow(sq(star.x) + sq(star.y), 0.41);
+                    d *= (1 + rand_from_value(d)) / 2;
+                    const angle = 2 * PI * smooth_step(v, 1);
+                    const x = X0 + star.x - d * Math.sin(angle) / 5;
+                    const y = Y0 + star.y + d * (1 - Math.cos(angle)) / 5;
+                    draw_star(x * SCALE, y * SCALE, star.w / 2 * SCALE, BASE_COLOR, HI_COLOR);
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            console.assert(SCALE > 0, "scale must be positive");
+            console.assert(PERIOD > 0, "scale must be positive");
+            animate();
+
+        </script>
+    </body>
+</html>
