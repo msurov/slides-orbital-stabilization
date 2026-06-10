@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Орбитальная стабилизация</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/simple.min.css" id="theme">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css"> -->
 
-<!--   <link rel="stylesheet" href="reveal/dist/reset.css">
+  <link rel="stylesheet" href="reveal/dist/reset.css">
   <link rel="stylesheet" href="reveal/dist/reveal.css">
   <link rel="stylesheet" href="reveal/dist/theme/simple.css" id="theme">
   <link rel="stylesheet" href="reveal/plugin/highlight/monokai.css">
   <link rel="stylesheet" href="reveal/plugin/math/katex.js">
- -->
+
 
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="robotanim.css">
@@ -322,7 +322,7 @@
         </h1>
       </section>
 
-      <section data-title="Классическая устойчивость траектории">
+      <section data-title="Классическое определение устойчивости траектории">
         <div class="cols">
           <div style="flex: 0.6; border-right: 2px solid rgba(150,150,150,0.95);" class="regular">
             Рассмотрим динамику с обратной связью:
@@ -383,9 +383,8 @@
         <div class="cols">
           <div class="regular" style="flex: 1">
             <div class="title">
-              Дополнительно определяем понятия
+              Дополнительно определяем:
             </div>
-
             <ul>
               <li><b><em>Орбита</em></b> — множество точек фазового пространства, через которые проходит решение:
               $$
@@ -394,7 +393,7 @@
               </li>
               <li>Расстояние между точками фазового пространства (стандартная структура евклидова пространства):
               $$
-                \mathrm{dist}(x, y) := \left\Vert x - y \right\Vert_2 \equiv \sqrt{\sum_{i=1}^n (x_i - y_i)^2 }
+                \mathrm{dist}(x, y) := \left\Vert x - y \right\Vert \equiv \sqrt{\sum_{i=1}^n (x_i - y_i)^2 }
               $$
               </li>
               <li>Расстояние от точки до орбиты:
@@ -415,19 +414,11 @@
             </ul>
             <div class="cols">
 
-              <figure class="figure" style="flex: 1">
+              <figure class="figure" style="max-width: 65%; margin-left: 10%;">
                 <img class="img" src="media/tubular-neighborhood.svg"
                      alt="Trajectory tubula neighborhood">
                 <figcaption class="caption">
-                  Расстояние от точки до орбиты, окрестность орбиты.
-                </figcaption>
-              </figure>
-
-              <figure class="figure" style="flex: 1">
-                <img class="img" src="media/trajectory-neighborhood.svg"
-                     alt="Trajectory tubula neighborhood">
-                <figcaption class="caption">
-                  Траектория имеет ограниченную кривизну — ближайшая точка единственная.
+                  Орбита $\mathrm{orb}\,x_\star$, расстояние от точки до орбиты $\mathrm{dist}(x, \mathrm{orb}\,x_\star)$, трубчатая окрестность орбиты $U_\epsilon$.
                 </figcaption>
               </figure>
 
@@ -678,8 +669,10 @@
 
             <div class="box remark fragment fade-left">
               При $\xi = 0$ динамическая система находится на орбите: $x \in \mathrm{orb} \, x_\star$. <br>
-              В новых координата цель управления 
-              $$\xi \to 0 \quad \text{при} \quad t\to\infty.$$
+              Необходимо выписать эволюцию координаты $\xi$ и потребовать
+              $$
+                \xi \to 0 \quad \text{при} \quad t\to\infty.
+              $$
             </div>
           </div>
         </div>
@@ -851,7 +844,9 @@
                 $$
                   \frac{d x_\star(\tau)}{d\tau} \ne 0 \quad \forall \tau \in I
                 $$
-                определяем касательный вектор $v(\tau) \in S^{n-1}$
+              </li>
+              <li>
+                Определяем касательный вектор $v(\tau) \in S^{n-1}$
                 $$
                   v\left(\tau\right):=\frac{\frac{dx_{\star}\left(\tau\right)}{d\tau}}{\left\Vert \frac{dx_{\star}\left(\tau\right)}{d\tau}\right\Vert }
                 $$
@@ -863,6 +858,13 @@
                 $$
               </li>
             </ul>
+
+            <p>
+              Нужно задать преобразование координат $x\mapsto (\tau,\xi)$.
+            </p>
+            <p>
+              Определили координату $\tau$. Как определить ещё $(n-1)$ координат $\xi$?
+            </p>
 
           </div>
           <div>
@@ -880,7 +882,7 @@
 
       <section data-title="Секущая гиперплоскость">
         <div class="cols">
-          <div class="regular" style="max-width: 50%;">
+          <div class="regular">
             <div class="title">
               Что изменится:
             </div>
@@ -905,7 +907,7 @@
             $$
               S_\tau := \left\{x\in U_\epsilon \mid \pi(x) = \tau\right\}.
             $$
-            Необходимое условие минимума
+            Необходимое условие минимума:
             $$
               \tau = \arg \min_\nu \Vert x - x_\star(\nu) \Vert \quad \Rightarrow \quad \left(x - x_\star(\tau)\right)^\top v(\tau) = 0
             $$
@@ -925,13 +927,13 @@
 
       <section data-title="Трансверальные координаты">
         <div class="cols">
-          <div class="regular">
+          <div class="regular" style="flex: 0.75">
             Гиперплоскость $S_\tau$ — линейное пространство размерности $n-1$. Определяем базисные вектора (подвижный репер): 
             $$
               E(\tau)\equiv\left[\begin{array}{c|c|c|c}
                 e_{1}(\tau) & e_{2}(\tau) & \dots & e_{n-1}(\tau)\end{array}\right]\in\mathbb{R}^{n\times n-1}.
             $$
-            Вектор $x - x_\star(\tau)$ раскладываем по базисным векторам $e_i(\tau)$:
+            Вектор $x - x_\star(\tau)$ раскладываем по базисным векторам $e_i(\tau):$
             $$
               x - x_\star(\tau) = e_1(\tau) \xi_1 + e_2(\tau) \xi_2 + \dots + e_{n-1} \xi_{n-1}.
             $$
@@ -954,9 +956,20 @@
             $$
           </div>
           <div>
-            <figure class="figure" style="max-width: 70%; margin-left: 100pt;">
-              <img class="img" src="media/hyperplane-basis-vectors-3d.svg" alt="Hyperplane basis vectors 3d">
-            </figure>
+            <div class="cols">
+              <figure class="figure" style="max-width: 40%">
+                <img class="img" src="media/hyperplane-basis-vectors-3d.svg" alt="Hyperplane basis vectors 3d">
+                <figcaption class="caption">
+                  На гиперплоскости определяем ортонормированный базис линейного пространства $e_i(\tau)$.
+                </figcaption>
+              </figure>
+              <figure class="figure" style="max-width: 60%">
+                <img class="img" src="media/hyperplane-bundle-3d.svg" alt="Hyperplane basis vectors 3d">
+                <figcaption class="caption">
+                  Каждому значению параметра $\tau$ соответствует своя гиперплоскость $S_\tau$ и свой набор базисных векторов $e_i(\tau)$.
+                </figcaption>
+              </figure>
+            </div>
             <div class="box remark">
               Получили преобразование координат $x \mapsto (\tau,\xi)$:
               $$\begin{aligned}

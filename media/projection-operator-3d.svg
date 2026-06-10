@@ -7,7 +7,7 @@
    viewBox="-2 -1 122.21795 55.378"
    version="1.1"
    id="svg5"
-   sodipodi:docname="hyperplane-3d — копия.svg"
+   sodipodi:docname="projection-operator-3d.svg"
    inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    inkscape:export-filename="c:\Users\Sirius\Documents\slides\3d\10.png"
    inkscape:export-xdpi="245.27"
@@ -28,9 +28,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.2269784"
-     inkscape:cx="228.20288"
-     inkscape:cy="-15.8927"
+     inkscape:zoom="1.7352095"
+     inkscape:cx="308.89642"
+     inkscape:cy="268.26732"
      inkscape:window-width="1720"
      inkscape:window-height="1377"
      inkscape:window-x="1704"
@@ -331,12 +331,6 @@
        d="M 113.25391,97.081309 75.632693,98.586321"
        id="path2"
        sodipodi:nodetypes="cc" />
-    <circle
-       style="fill:#160900;fill-opacity:1;stroke:none;stroke-width:1.81448"
-       id="path22"
-       cx="113.64615"
-       cy="96.979385"
-       r="1.9107548" />
     <g
        id="g113"
        transform="translate(29.434604,-48.302941)">
@@ -659,14 +653,6 @@
         </g>
       </g>
     </g>
-    <ellipse
-       style="fill:#1e0067;fill-opacity:1;stroke:none;stroke-width:1.81448;stroke-opacity:1"
-       id="circle113"
-       cx="59.800903"
-       cy="170.54028"
-       rx="1.6681619"
-       ry="1.9107548"
-       transform="rotate(-27.987409)" />
     <g
        id="g119"
        transform="translate(34.55601,-7.601244)">
@@ -869,5 +855,19 @@
        style="fill:#682aff;fill-opacity:1;stroke:#1c1cdb;stroke-width:0.918001;stroke-opacity:1"
        d="M 132.82918,122.66184 113.84552,97.426536"
        id="path3" />
+    <circle
+       style="fill:#160900;fill-opacity:1;stroke:none;stroke-width:1.81448"
+       id="path22"
+       cx="113.64615"
+       cy="96.979385"
+       r="1.9107548" />
+    <ellipse
+       style="fill:#1e0067;fill-opacity:1;stroke:none;stroke-width:1.81448;stroke-opacity:1"
+       id="circle113"
+       cx="59.800903"
+       cy="170.54028"
+       rx="1.6681619"
+       ry="1.9107548"
+       transform="rotate(-27.987409)" />
   </g>
 </svg>
