@@ -62,11 +62,6 @@
   <div class="reveal">
     <div class="slides">
 
-      <div id="goto-slide" class="goto-slide">
-        <label>Go to slide: <input type="number" id="goto-input" min="1"></label>
-        <button id="goto-ok">Go</button>
-      </div>
-
       <section data-title="">
         <div class="cols">
 
@@ -76,7 +71,7 @@
               Задача орбитальной стабилизации траекторий нелинейных динамических систем
             </h1>
 
-            <div class="author" style="margin-top: 30pt; margin-bottom: 30pt;">
+            <div class="author" style="margin-top: 28pt; margin-bottom: 28pt;">
               Максим Олегович Суров<br>
               <a style="font-size: 24pt; color: #202020; font-weight: bold;">&#9993 surov.mo@talantiuspeh.ru</a>
             </div>
@@ -452,7 +447,7 @@
             </div>
           </div>
           <div style="flex: 0.6">
-            <figure class="figure" style="flex: 1; margin-top: 50pt;">
+            <figure class="figure" style="margin-top: 50pt;">
               <img class="img" src="media/orbital-stability.svg"
                    alt="Orbital stability">
               <figcaption class="caption">
@@ -572,7 +567,7 @@
             $$
               \Delta \to 0 \quad \text{при} \quad t \to \infty
             $$
-            <figure class="figure" style="flex: 1">
+            <figure class="figure">
               <img class="img" src="media/vanderpol-dif.svg"
                    alt="Ven dr Pol oscillator">
             </figure>
@@ -583,7 +578,7 @@
               \xi \to 0 \quad \Rightarrow \quad 
               \mathrm{dist}(x(t), \mathrm{orb}\, x_\star) \to 0
             $$
-            <figure class="figure" style="flex: 1">
+            <figure class="figure">
               <img class="img" src="media/vanderpol-orb-dist.svg"
                    alt="Ven dr Pol oscillator">
             </figure>
@@ -768,7 +763,7 @@
             Требуется разработать закон управления $w(\tau, \xi)$, который обеспечит устойчивость тривиального решения $\xi\equiv0$.
           </div>
           <div>
-            <figure class="figure" style="flex: 1">
+            <figure class="figure">
               <img class="img" src="media/vanderpol-phase.svg"
                    alt="Van der Pol phase portrait">
               <figcaption class="caption">
@@ -777,7 +772,7 @@
             </figure>
           </div>
           <div>
-            <figure class="figure" style="flex: 1">
+            <figure class="figure">
               <img class="img" src="media/vanderpol-transverse.svg"
                    alt="Van der Pol transverse coordinates">
               <figcaption class="caption">
@@ -869,7 +864,7 @@
           </div>
           <div>
  
-            <figure class="figure" style="flex: 1; margin-top: 100pt; margin-left: 100pt; max-width: 70%;">
+            <figure class="figure" style="margin-top: 100pt; margin-left: 100pt; max-width: 70%;">
               <img class="img" src="media/projection-operator-3d.svg"
                    alt="Projection operator 3D">
               <figcaption class="caption">
@@ -881,7 +876,7 @@
       </section>
 
       <section data-title="Секущая гиперплоскость">
-        <div class="cols">
+        <div class="cols" style="flex: 1.2">
           <div class="regular">
             <div class="title">
               Что изменится:
@@ -913,12 +908,12 @@
             $$
             определяет гиперплоскость: $v(\tau)$ — вектор нормали к гиперплоскости, $x_\star(\tau)$ — принадлежащая ей точка.
           </div>
-          <div style="flex: 10">
-            <figure class="figure" style="margin-top: 100pt; margin-left: 100pt; max-width: 70%;">
+          <div style="flex: 1">
+            <figure class="figure" style="margin-top: 100pt; margin-left: 20%; max-width: 60%;">
               <img class="img" src="media/hyperplane-3d.svg"
                    alt="Hyperplane 3D">
               <figcaption class="caption">
-                
+                Секущая гиперплоскость $S_\tau$ ортогональна касательному вектора $v(\tau)$.
               </figcaption>
             </figure>
           </div>

@@ -30,7 +30,7 @@ body {
   padding: 4pt 8pt;
   border-radius: var(--page-title-radius);
   font-weight: 600;
-  z-index: 9999;
+  z-index: 100;
   font-size: 26pt;
   /*font-size: 1.5rem;*/
   box-shadow: 1pt 1pt 5pt rgba(0, 0, 0, 0.6);
@@ -41,7 +41,7 @@ body {
 }
 
 .slide-info {
-  position:fixed;
+  position: fixed;
   left: 0.6rem;
   bottom: 0.6rem;
   background: var(--titlebar-bg);
@@ -49,28 +49,28 @@ body {
   padding: 8pt 8pt;
   border-radius: var(--page-title-radius);
   font-weight: 500;
-  font-size: 16pt;
+  font-size: 18pt;
   line-height: 1.2;
-  z-index: 9999;
+  z-index: 101;
   box-shadow: 1pt 1pt 5pt rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(5pt);
 }
 
 .title-foot {
-  font-size: 16pt;
+  font-size: 18pt;
   font-weight: 600;
   font-family: var(--presentation-font);
 }
 
 .author-foot {
-  font-size: 14pt;
+  font-size: 18pt;
   font-weight: 500;
   font-family: var(--presentation-font);
 }
 
 .author {
   font-weight: 500;
-  font-size: 36pt;
+  font-size: 30pt;
   color: var(--titlebar-color);
   line-height: 1.2;
   margin-bottom: 10pt;
@@ -109,7 +109,7 @@ body {
   padding: 6pt 10pt;
   border-radius: var(--page-number-radius);
   font-weight: 500;
-  z-index: 9999;
+  z-index: 102;
   font-size: 1rem;
   box-shadow: 1pt 1pt 3pt rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(5pt);
@@ -117,7 +117,7 @@ body {
 }
 
 .reveal section h1 {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 36pt;
   color: var(--titlebar-color);
   line-height: 1.4;
@@ -253,7 +253,7 @@ body {
   border-radius: 6pt;
   box-shadow: 0 2pt 4pt rgba(0,0,0,0.2);
   text-align: left;
-  z-index: 9999;
+  z-index: 10;
 }
 
 .reveal .video-frame video {
@@ -275,7 +275,7 @@ body {
   border-radius: 6pt;
   box-shadow: 1pt 1pt 3pt rgba(0, 0, 0, 0.6);
   text-align: right;
-  z-index: 9999;
+  z-index: 11;
   font-family: var(--presentation-font);
 }
 
@@ -405,29 +405,26 @@ body {
   color: #3057ff;
 }
 
-.goto-slide {
-  display: none;            /* hidden by default */
-  position: absolute;
-  top: 20%;                 /* adjust vertical position */
-  left: 50%;                /* horizontal center */
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.85);
-  color: #fff;
-  padding: 1rem 1.5rem;
-  border-radius: 8pt;
-  z-index: 999;
-  font-family: sans-serif;
-}
-
-.goto-slide input {
-  width: 4ch;
-  margin-left: 0.5rem;
-}
-
 .bottom-right-image {
   float: right;
   width: 120pt;
   height: auto;
   margin: 0 0 2pt 2pt;
   padding: 0pt 2pt;
+}
+
+.reveal .jump-to-slide {
+  position: fixed;
+  top: 5%;    /* Center vertically */
+  left: 75%;   /* Center horizontally */
+  transform: translate(-50%, -50%); /* Offset to perfectly center the box */
+  margin: 0;
+  font-size: 50pt;
+  font-family: var(--presentation-font);
+  color: #404040;
+  background: var(--titlebar-bg);
+  border-radius: 4pt;
+  width: 300pt;
+  box-shadow: 1pt 1pt 5pt rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4pt);
 }
