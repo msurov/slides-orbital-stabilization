@@ -5,35 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Орбитальная стабилизация</title>
 
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/simple.min.css" id="theme">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/monokai.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css"> -->
-
-  <link rel="stylesheet" href="reveal/dist/reset.css">
-  <link rel="stylesheet" href="reveal/dist/reveal.css">
-  <link rel="stylesheet" href="reveal/dist/theme/simple.css" id="theme">
-  <link rel="stylesheet" href="reveal/plugin/highlight/monokai.css">
-  <link rel="stylesheet" href="reveal/plugin/math/katex.js">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/theme/simple.min.css" id="theme">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/plugin/highlight/monokai.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="robotanim.css">
 </head>
 
 <body>
-  <div class="slide-title">
-    <div style="display: flex; gap: 0.75rem; align-items: center">
-      <iframe
-        src="sirius-logo.html"
-        width="50pt"
-        height="50pt"
-        frameborder="0"
-        scrolling="no">
-      </iframe>
-      <div class="subtitle" id="slide-subtitle">##</div>
-    </div>
+  <div id="slide-title" class="slide-title">
+    <iframe
+      src="sirius-logo.html"
+      width="50pt"
+      height="50pt"
+      frameborder="0"
+      scrolling="no">
+    </iframe>
+    <div class="subtitle" id="slide-subtitle">##</div>
   </div>
 
   <div class="slide-info">
@@ -65,7 +56,7 @@
       <section data-title="">
         <div class="cols">
 
-          <div>
+          <div style="flex: 0.7">
 
             <h1>
               Задача орбитальной стабилизации траекторий нелинейных динамических систем
@@ -215,7 +206,7 @@
               Две гладкие функции $x_\star(t)$ и $u_\star(t)$:
               $$
                 \begin{aligned}
-                  x_\star(t) \in C^2(I, \mathbb{R}^n), \quad 
+                  x_\star(t) \in C^3(I, \mathbb{R}^n), \quad 
                   u_\star(t) \in C^1(I, \mathbb{R}^m),
                 \end{aligned}
               $$
@@ -595,24 +586,26 @@
       <section data-title="Гоеметрические построения">
         <div class="cols">
           <div style="flex: 1; border-right: 2px solid rgba(150,150,150,0.95);" class="regular">
-            Пусть $\dim x = 2$ и $\dim u = 1$:
+            <p>
+              Пусть $\dim x = 2$ и $\dim u = 1$:
+            </p>
             <ol>
               <li>
-                Сопоставим решению $x_\star(t)$ кривую $x_\star(\tau)$ на Декартовой плоскости в параметрическом представлении с параметром $\tau \in I$.
+                Траектории динамической системы, т.е. функции 
+                $$
+                  x_\star(t): I \to \mathbb{R}^2,
+                $$
+                сопоставим <em><b>регулярную кривую</b></em>, заданную в параметрическом виде, $x_\star(\tau)$, с параметром $\tau \in I$, предполагая что
+                $$
+                  \dot x_\star(t) \ne 0 \quad \forall t.
+                $$
               </li>
               <li>
-                Потребуем 
+                Для кривой определим <em><b>касательный вектор</b></em>
                 $$
-                  \dot x_\star(t) \ne 0 \quad \forall t
+                  v\left(\tau\right):= \left\Vert \frac{dx_{\star}\left(\tau\right)}{d\tau}\right\Vert^{-1} \frac{dx_{\star}\left(\tau\right)}{d\tau}
                 $$
-                Тогда, учитывая $x_\star \in C^2(I)$, $x_\star(\tau)$ является регулярной кривой.
-              </li>
-              <li>
-                Для кривой определим касательный вектор
-                $$
-                  v\left(\tau\right):=\frac{\frac{dx_{\star}\left(\tau\right)}{d\tau}}{\left\Vert \frac{dx_{\star}\left(\tau\right)}{d\tau}\right\Vert }
-                $$
-                и вектор нормали
+                и <em><b>вектор нормали</b></em>
                 $$
                   e\left(\tau\right):=\left[\begin{array}{cc}
                     0 & -1\\
@@ -632,7 +625,7 @@
                 \end{aligned}$$
                 При 
                 $$
-                  \epsilon<\frac{1}{\max_{\nu}\left|\mathrm{curv}\,x_{\star}\left(\nu\right)\right|}
+                  \epsilon<\frac{1}{\sup_{\nu}\left|\mathrm{curv}\,x_{\star}\left(\nu\right)\right|}
                 $$
                 этот ближайшая точка будет единственной.
               </li>
@@ -843,7 +836,7 @@
               <li>
                 Определяем касательный вектор $v(\tau) \in S^{n-1}$
                 $$
-                  v\left(\tau\right):=\frac{\frac{dx_{\star}\left(\tau\right)}{d\tau}}{\left\Vert \frac{dx_{\star}\left(\tau\right)}{d\tau}\right\Vert }
+                  v\left(\tau\right):= \left\Vert \frac{dx_{\star}\left(\tau\right)}{d\tau}\right\Vert^{-1} \frac{dx_{\star}\left(\tau\right)}{d\tau}
                 $$
               </li>
               <li>
@@ -1014,7 +1007,7 @@
             </div>
             где $A(\tau) \in \mathbb{R}^{(n-1) \times (n-1)}$, $B(\tau) \in \mathbb{R}^{(n-1) \times m}$ — матричные функции.
           </div>
-          <div class="regular">
+          <div class="regular" style="border-left: 2px solid rgba(150,150,150,0.95);">
             Управление $w(\tau,\xi)$ минимизирует функционал
             $$
               \Phi = \int_0^\infty \xi^\top Q \xi + w^\top R w d\tau,
@@ -1328,10 +1321,8 @@
 
   <div class="page-number-badge" id="page-number">1 / 1</div>
 
-  <script src="reveal/plugin/math/math.js"></script>
-  <script src="reveal/dist/reveal.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/math/math.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/reveal.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/plugin/math/math.min.js"></script>
 
   <script>
 
@@ -1344,6 +1335,7 @@
       hash: true,
       slideNumber: false, // we'll show a custom page number badge
       transition: 'convex',
+      transitionSpeed: 'default', // slow, fast
       dependencies: [
         // add plugins here if needed
       ],
@@ -1360,20 +1352,26 @@
     });
     deck.initialize();
 
+    function countSections() {
+      // count top-level sections only (not vertical stacks), emulate visible slides count
+      const secs = Array.from(document.querySelectorAll('.reveal .slides > section'));
+      // include vertically nested sections: flatten
+      let count = 0;
+      secs.forEach(s => {
+        const children = s.querySelectorAll('section');
+        if (children.length) {
+          count += children.length;
+        } else {
+          count +=1;
+        }
+      });
+      return count;
+    }
+
     // Helper to update page number and subtitle
     function updateStatus() {
       const indices = deck.getIndices();
-      const total = (function countSections(){
-        // count top-level sections only (not vertical stacks), emulate visible slides count
-        const secs = Array.from(document.querySelectorAll('.reveal .slides > section'));
-        // include vertically nested sections: flatten
-        let count = 0;
-        secs.forEach(s=>{
-          const children = s.querySelectorAll('section');
-          if(children.length) count += children.length; else count +=1;
-        });
-        return count;
-      })();
+      const total = countSections();
 
       // Compute linear index (1-based): horizontal index plus vertical offset
       // Reveal offers getTotalSlides() but not in all builds; compute manually
@@ -1384,7 +1382,7 @@
       const tops = Array.from(document.querySelectorAll('.reveal .slides > section'));
       let linearIndex = 0;
 
-      for(let i=0;i<tops.length;i++){
+      for(let i=0; i < tops.length; i++){
         const nested = tops[i].querySelectorAll('section');
         if(nested.length){
           if(i < horizontal) linearIndex += nested.length;
@@ -1415,8 +1413,10 @@
 
       if (label) {
         document.getElementById('slide-subtitle').textContent = label;
+        document.getElementById('slide-title').style.display = "flex";
       } else {
         document.getElementById('slide-subtitle').textContent = '';
+        document.getElementById('slide-title').style.display = "none";
       }
     }
 
