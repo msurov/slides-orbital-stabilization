@@ -22,6 +22,9 @@ body {
 }
 
 .slide-title {
+  display: flex;
+  gap: 5pt;
+  align-items: center;
   position: fixed;
   left: 0.6rem;
   top: 0.6rem;
@@ -32,7 +35,6 @@ body {
   font-weight: 600;
   z-index: 100;
   font-size: 26pt;
-  /*font-size: 1.5rem;*/
   box-shadow: 1pt 1pt 5pt rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4pt);
   height: 38pt;
@@ -110,7 +112,7 @@ body {
   border-radius: var(--page-number-radius);
   font-weight: 500;
   z-index: 102;
-  font-size: 1rem;
+  font-size: 18pt;
   box-shadow: 1pt 1pt 3pt rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(5pt);
   font-family: var(--presentation-font);
@@ -118,7 +120,7 @@ body {
 
 .reveal section h1 {
   font-weight: 600;
-  font-size: 36pt;
+  font-size: 42pt;
   color: var(--titlebar-color);
   line-height: 1.4;
   margin-bottom: 0.6rem;
@@ -135,7 +137,7 @@ body {
 }
 
 .reveal section p {
-  line-height: 1.4
+  line-height: 1.4;
   font-family: var(--presentation-font);
 }
 
